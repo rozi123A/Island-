@@ -19,51 +19,51 @@ interface User {
 const trendingUsers: User[] = [
   {
     id: "1",
-    name: "أريل 🌹",
-    age: 27,
+    name: "سارة 🌹",
+    age: 22,
     online: true,
     views: 1250,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ariel",
+    avatar: "/manus-storage/featured-users-1_27a30c34.png",
   },
   {
     id: "2",
-    name: "إيفا 💚",
-    age: 24,
+    name: "أحمد 💚",
+    age: 25,
     online: true,
     views: 980,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Eva",
+    avatar: "/manus-storage/featured-users-2_3be123c9.png",
   },
   {
     id: "3",
-    name: "دافني 💗",
-    age: 31,
+    name: "فاطمة 💗",
+    age: 20,
     online: true,
     views: 1540,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Daphne",
+    avatar: "/manus-storage/featured-users-3_08395f94.png",
   },
   {
     id: "4",
-    name: "ماي 🖤",
-    age: 26,
+    name: "محمد 🖤",
+    age: 23,
     online: true,
     views: 1120,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mai",
+    avatar: "/manus-storage/featured-users-4_580a4f31.png",
   },
   {
     id: "5",
-    name: "روزماري 👑",
-    age: 29,
+    name: "ليلى 👑",
+    age: 21,
     online: true,
     views: 1890,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rosemary",
+    avatar: "/manus-storage/featured-users-1_27a30c34.png",
   },
   {
     id: "6",
-    name: "توكيو 👻",
-    age: 22,
+    name: "علي 👻",
+    age: 24,
     online: true,
     views: 2100,
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Tokio",
+    avatar: "/manus-storage/featured-users-2_3be123c9.png",
   },
 ];
 
@@ -123,7 +123,7 @@ export default function TrendingUsers() {
                 </div>
 
                 {/* CTA Button */}
-                <button className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-purple-700 hover:to-pink-600 transition-all duration-300 transform hover:scale-105">
+                <button className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-purple-700 hover:to-pink-600 transition-all duration-300 transform hover:scale-105" onClick={() => window.location.href = '/login'}>
                   ابدأ الدردشة
                 </button>
               </div>

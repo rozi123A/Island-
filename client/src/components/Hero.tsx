@@ -48,6 +48,7 @@ export default function Hero() {
           <Button
             size="lg"
             className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            onClick={() => window.location.href = '/login'}
           >
             ابدأ الدردشة مجاناً
           </Button>
@@ -55,6 +56,7 @@ export default function Hero() {
             size="lg"
             variant="outline"
             className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 text-lg px-8 py-6 rounded-full"
+            onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <Play className="w-5 h-5 mr-2" />
             شاهد كيفية العمل
