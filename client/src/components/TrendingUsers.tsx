@@ -23,7 +23,7 @@ const trendingUsers: User[] = [
     age: 22,
     online: true,
     views: 1250,
-    avatar: "/manus-storage/featured-users-1_27a30c34.png",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
   },
   {
     id: "2",
@@ -31,7 +31,7 @@ const trendingUsers: User[] = [
     age: 25,
     online: true,
     views: 980,
-    avatar: "/manus-storage/featured-users-2_3be123c9.png",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
   },
   {
     id: "3",
@@ -39,7 +39,7 @@ const trendingUsers: User[] = [
     age: 20,
     online: true,
     views: 1540,
-    avatar: "/manus-storage/featured-users-3_08395f94.png",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
   },
   {
     id: "4",
@@ -47,7 +47,7 @@ const trendingUsers: User[] = [
     age: 23,
     online: true,
     views: 1120,
-    avatar: "/manus-storage/featured-users-4_580a4f31.png",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
   },
   {
     id: "5",
@@ -55,7 +55,7 @@ const trendingUsers: User[] = [
     age: 21,
     online: true,
     views: 1890,
-    avatar: "/manus-storage/featured-users-1_27a30c34.png",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
   },
   {
     id: "6",
@@ -63,7 +63,7 @@ const trendingUsers: User[] = [
     age: 24,
     online: true,
     views: 2100,
-    avatar: "/manus-storage/featured-users-2_3be123c9.png",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
   },
 ];
 
@@ -98,7 +98,7 @@ export default function TrendingUsers() {
                   <img
                     src={user.avatar}
                     alt={user.name}
-                    className="w-20 h-20 rounded-full border-4 border-purple-200 shadow-lg"
+                    className="w-20 h-20 rounded-full border-4 border-purple-200 shadow-lg object-cover"
                   />
                   {/* Online indicator */}
                   {user.online && (
@@ -123,7 +123,10 @@ export default function TrendingUsers() {
                 </div>
 
                 {/* CTA Button */}
-                <button className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-purple-700 hover:to-pink-600 transition-all duration-300 transform hover:scale-105" onClick={() => window.location.href = '/login'}>
+                <button 
+                  onClick={() => window.location.href = '/login'}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-purple-700 hover:to-pink-600 transition-all duration-300 transform hover:scale-105"
+                >
                   ابدأ الدردشة
                 </button>
               </div>

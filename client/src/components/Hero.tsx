@@ -13,7 +13,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: "url('/manus-storage/hero-bg_5531f835.png')",
+          backgroundImage: "linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -26,11 +26,9 @@ export default function Hero() {
       <div className="relative z-10 container mx-auto px-4 text-center">
         {/* Logo/Brand */}
         <div className="mb-8 flex justify-center">
-          <img
-            src="/manus-storage/logo-icon_bfd3654c.png"
-            alt="ConnectLive Logo"
-            className="w-16 h-16 animate-pulse"
-          />
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-3xl font-bold text-white animate-pulse">
+            C
+          </div>
         </div>
 
         {/* Main Headline */}
