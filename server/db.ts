@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, InsertMessage, messages } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,85 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function saveUserProfile(userId: number, data: {
+  name?: string;
+  age?: number;
+  gender?: string;
+  avatar?: string;
+  bio?: string;
+}) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot save user profile: database not available");
+    return;
+  }
+
+  try {
+    const updateData: Record<string, unknown> = {};
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.age !== undefined) updateData.age = data.age;
+    if (data.gender !== undefined) updateData.gender = data.gender;
+    if (data.avatar !== undefined) updateData.avatar = data.avatar;
+    if (data.bio !== undefined) updateData.bio = data.bio;
+    updateData.updatedAt = new Date();
+
+    await db.update(users).set(updateData).where(eq(users.id, userId));
+  } catch (error) {
+    console.error("[Database] Failed to save user profile:", error);
+    throw error;
+  }
+}
+
+export async function getUsersByGender(gender: 'male' | 'female' | 'other') {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get users: database not available");
+    return [];
+  }
+
+  try {
+    const result = await db.select().from(users).where(eq(users.gender, gender));
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get users by gender:", error);
+    return [];
+  }
+}
+
+export async function saveMessage(senderId: number, receiverId: number, content: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot save message: database not available");
+    return;
+  }
+
+  try {
+    await db.insert(messages).values({
+      senderId,
+      receiverId,
+      content,
+      isRead: false,
+    });
+  } catch (error) {
+    console.error("[Database] Failed to save message:", error);
+    throw error;
+  }
+}
+
+export async function getMessages(userId1: number, userId2: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get messages: database not available");
+    return [];
+  }
+
+  try {
+    const result = await db.select().from(messages).where(
+      or(eq(messages.senderId, userId1), eq(messages.receiverId, userId1))
+    );
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get messages:", error);
+    return [];
+  }
+}

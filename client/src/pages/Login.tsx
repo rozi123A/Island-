@@ -3,23 +3,55 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLocation } from 'wouter';
 import { Heart, Video } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
+import { useAuth } from '@/_core/hooks/useAuth';
 
 export default function Login() {
   const [, setLocation] = useLocation();
+  const { user } = useAuth();
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
+  const [avatar, setAvatar] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const saveProfileMutation = trpc.users.saveProfile.useMutation();
 
   const handleStartChat = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !age || !gender) return;
-    
+    if (!name || !age || !gender) {
+      setError('يرجى ملء جميع الحقول');
+      return;
+    }
+
+    if (!user) {
+      setError('يجب تسجيل الدخول أولاً');
+      return;
+    }
+
     setIsLoading(true);
-    // محاكاة تأخير الاتصال
-    setTimeout(() => {
-      setLocation('/chat');
-    }, 1500);
+    setError('');
+
+    try {
+      // حفظ البيانات في قاعدة البيانات
+      await saveProfileMutation.mutateAsync({
+        name,
+        age: parseInt(age),
+        gender: gender as 'male' | 'female' | 'other',
+        avatar: avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+      });
+
+      // الانتقال إلى صفحة الدردشة
+      setTimeout(() => {
+        setLocation('/chat');
+      }, 500);
+    } catch (err) {
+      setError('حدث خطأ أثناء حفظ البيانات');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,6 +77,13 @@ export default function Login() {
         {/* بطاقة النموذج */}
         <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl">
           <form onSubmit={handleStartChat} className="space-y-4">
+            {/* رسالة الخطأ */}
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 text-white text-sm p-3 rounded-xl">
+                {error}
+              </div>
+            )}
+
             {/* الاسم */}
             <div>
               <label className="block text-white text-sm font-medium mb-2">اسمك</label>
@@ -91,10 +130,10 @@ export default function Login() {
             {/* زر البدء */}
             <Button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || saveProfileMutation.isPending}
               className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 mt-6"
             >
-              {isLoading ? (
+              {isLoading || saveProfileMutation.isPending ? (
                 <span className="flex items-center justify-center">
                   <span className="animate-spin mr-2">⏳</span>
                   جاري البحث...
