@@ -11,6 +11,10 @@ import Footer from "@/components/Footer";
  * Sections: Hero, Trending Users, Features, FAQ, Footer
  */
 export default function Home() {
+  // The userAuth hooks provides authentication state
+  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
