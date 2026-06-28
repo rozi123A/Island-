@@ -2,7 +2,7 @@ import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
-import { saveUserProfile, getUsersByGender, getMessages, saveMessage, upsertUser, getUserByOpenId } from "./db";
+import { saveUserProfile, getUsersByGender, getMessages, saveMessage, upsertUser, getUserByOpenId, getRecentUsers } from "./db";
 import { sdk } from "./_core/sdk";
 import { nanoid } from "nanoid";
 import { z } from "zod";
@@ -19,7 +19,6 @@ export const appRouter = router({
   }),
 
   users: router({
-    // تسجيل دخول كضيف (بدون OAuth) — يحفظ البيانات في قاعدة البيانات ويُنشئ جلسة
     guestLogin: publicProcedure
       .input(z.object({
         name: z.string().min(1, "الاسم مطلوب"),
@@ -38,7 +37,7 @@ export const appRouter = router({
         });
 
         const user = await getUserByOpenId(guestOpenId);
-        if (!user) throw new Error("فشل إنشاء المستخدم");
+        if (!user) throw new Error("فشل انشاء المستخدم");
 
         await saveUserProfile(user.id, {
           name: input.name,
@@ -75,6 +74,12 @@ export const appRouter = router({
       .input(z.enum(['male', 'female', 'other']))
       .query(async ({ input }) => {
         return await getUsersByGender(input);
+      }),
+
+    getRecent: publicProcedure
+      .input(z.number().min(1).max(50).optional())
+      .query(async ({ input }) => {
+        return await getRecentUsers(input ?? 20);
       }),
   }),
 
