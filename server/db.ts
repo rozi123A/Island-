@@ -1,4 +1,4 @@
-import { eq, or } from 'drizzle-orm';
+import { desc, eq, isNotNull, or } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { InsertUser, users, InsertMessage, messages } from '../drizzle/schema';
@@ -142,6 +142,33 @@ export async function getUsersByGender(gender: 'male' | 'female' | 'other') {
     return await db.select().from(users).where(eq(users.gender, gender));
   } catch (error) {
     console.error('[Database] Failed to get users by gender:', error);
+    return [];
+  }
+}
+
+export async function getRecentUsers(limit = 20) {
+  const db = await getDb();
+  if (!db) {
+    console.warn('[Database] Cannot get recent users: database not available');
+    return [];
+  }
+
+  try {
+    return await db
+      .select({
+        id: users.id,
+        name: users.name,
+        age: users.age,
+        gender: users.gender,
+        avatar: users.avatar,
+        lastSignedIn: users.lastSignedIn,
+      })
+      .from(users)
+      .where(isNotNull(users.name))
+      .orderBy(desc(users.lastSignedIn))
+      .limit(limit);
+  } catch (error) {
+    console.error('[Database] Failed to get recent users:', error);
     return [];
   }
 }
