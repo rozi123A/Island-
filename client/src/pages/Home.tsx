@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import TrendingUsers from "@/components/TrendingUsers";
 import Features from "@/components/Features";
 import FAQ from "@/components/FAQ";
+import Security from "@/components/Security";
 import Footer from "@/components/Footer";
 
 /**
@@ -19,6 +20,7 @@ export default function Home() {
       <TrendingUsers />
       <Features />
       <FAQ />
+      <Security />
       <Footer />
     </div>
   );

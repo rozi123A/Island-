@@ -44,7 +44,7 @@ export default function Header() {
           <a href="#faq" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
             الأسئلة الشائعة
           </a>
-          <a href="#safety" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
+          <a href="#security" className="text-gray-700 hover:text-purple-600 font-medium transition-colors">
             الأمان
           </a>
         </nav>
@@ -120,7 +120,7 @@ export default function Header() {
           <a href="#faq" className="block text-gray-700 hover:text-purple-600 font-medium py-2">
             الأسئلة الشائعة
           </a>
-          <a href="#safety" className="block text-gray-700 hover:text-purple-600 font-medium py-2">
+          <a href="#security" className="block text-gray-700 hover:text-purple-600 font-medium py-2">
             الأمان
           </a>
           <div className="flex flex-col gap-2 pt-4 border-t border-gray-100">

@@ -39,12 +39,12 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-purple-400 transition-colors">
+                <a href="#features" className="text-gray-400 hover:text-purple-400 transition-colors">
                   الميزات
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-purple-400 transition-colors">
+                <a href="#faq" className="text-gray-400 hover:text-purple-400 transition-colors">
                   الأسئلة الشائعة
                 </a>
               </li>
@@ -76,7 +76,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-purple-400 transition-colors">
+                <a href="#security" className="text-gray-400 hover:text-purple-400 transition-colors">
                   مركز الأمان
                 </a>
               </li>
