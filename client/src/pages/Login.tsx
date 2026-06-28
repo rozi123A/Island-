@@ -4,51 +4,50 @@ import { Input } from '@/components/ui/input';
 import { useLocation } from 'wouter';
 import { Heart, Video } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
-import { useAuth } from '@/_core/hooks/useAuth';
 
 export default function Login() {
   const [, setLocation] = useLocation();
-  const { user } = useAuth();
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
-  const [avatar, setAvatar] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const saveProfileMutation = trpc.users.saveProfile.useMutation();
+  const guestLoginMutation = trpc.users.guestLogin.useMutation();
 
   const handleStartChat = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !age || !gender) {
-      setError('يرجى ملء جميع الحقول');
+    setError('');
+
+    if (!name.trim()) {
+      setError('يرجى إدخال اسمك');
       return;
     }
-
-    if (!user) {
-      setError('يجب تسجيل الدخول أولاً');
+    if (!age || parseInt(age) < 13) {
+      setError('يجب أن يكون عمرك 13 سنة أو أكثر');
+      return;
+    }
+    if (!gender) {
+      setError('يرجى اختيار الجنس');
       return;
     }
 
     setIsLoading(true);
-    setError('');
 
     try {
-      // حفظ البيانات في قاعدة البيانات
-      await saveProfileMutation.mutateAsync({
-        name,
+      await guestLoginMutation.mutateAsync({
+        name: name.trim(),
         age: parseInt(age),
         gender: gender as 'male' | 'female' | 'other',
-        avatar: avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name.trim())}`,
       });
 
-      // الانتقال إلى صفحة الدردشة
       setTimeout(() => {
         setLocation('/chat');
-      }, 500);
+      }, 300);
     } catch (err) {
-      setError('حدث خطأ أثناء حفظ البيانات');
       console.error(err);
+      setError('حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى');
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +105,7 @@ export default function Login() {
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 className="bg-white/20 border-white/30 text-white placeholder:text-white/50 rounded-xl"
-                min="18"
+                min="13"
                 max="100"
                 required
               />
@@ -124,23 +123,24 @@ export default function Login() {
                 <option value="" className="bg-gray-900">اختر الجنس</option>
                 <option value="male" className="bg-gray-900">ذكر</option>
                 <option value="female" className="bg-gray-900">أنثى</option>
+                <option value="other" className="bg-gray-900">آخر</option>
               </select>
             </div>
 
             {/* زر البدء */}
             <Button
               type="submit"
-              disabled={isLoading || saveProfileMutation.isPending}
+              disabled={isLoading || guestLoginMutation.isPending}
               className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 mt-6"
             >
-              {isLoading || saveProfileMutation.isPending ? (
-                <span className="flex items-center justify-center">
-                  <span className="animate-spin mr-2">⏳</span>
-                  جاري البحث...
+              {isLoading || guestLoginMutation.isPending ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="animate-spin">⏳</span>
+                  جاري التسجيل...
                 </span>
               ) : (
-                <span className="flex items-center justify-center">
-                  <Heart className="w-5 h-5 mr-2" />
+                <span className="flex items-center justify-center gap-2">
+                  <Heart className="w-5 h-5" />
                   ابدأ الدردشة الآن
                 </span>
               )}
