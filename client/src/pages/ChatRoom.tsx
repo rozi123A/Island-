@@ -266,10 +266,13 @@ export default function ChatRoom() {
               <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ minHeight: 220 }}>
                 {status === 'matched' ? (
                   <>
-                    {peerAvatar
-                      ? <img src={peerAvatar} alt={peerName} className="w-24 h-24 rounded-full border-4 border-white/30 mb-3 bg-white object-cover" />
-                      : <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center mb-3 text-4xl">👤</div>
-                    }
+                    <div className="relative mb-3">
+                      {peerAvatar
+                        ? <img src={peerAvatar} alt={peerName} className="w-24 h-24 rounded-full border-4 border-white/30 bg-white object-cover" />
+                        : <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center text-4xl">👤</div>
+                      }
+                      <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-md"></span>
+                    </div>
                     <p className="text-white font-semibold text-lg">{peerName}</p>
                     <p className="text-white/50 text-sm mt-1">الكاميرا مطفاة</p>
                   </>
@@ -294,7 +297,10 @@ export default function ChatRoom() {
             />
             {!isVideoOn && (
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <img src={myAvatar} alt={myName} className="w-14 h-14 rounded-full border-2 border-white/40 mb-1 bg-white object-cover" />
+                <div className="relative mb-1">
+                  <img src={myAvatar} alt={myName} className="w-14 h-14 rounded-full border-2 border-white/40 bg-white object-cover" />
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-md"></span>
+                </div>
                 <p className="text-white text-xs">{myName}</p>
               </div>
             )}
