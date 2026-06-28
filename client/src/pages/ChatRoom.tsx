@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
-import { PhoneOff, Mic, MicOff, Video, VideoOff, SkipForward, Flag, Volume2, VolumeX, Send, MessageSquare, X } from 'lucide-react';
+import { PhoneOff, Mic, MicOff, Video, VideoOff, SkipForward, Flag, Volume2, VolumeX, Send, MessageSquare, X, Smartphone, Lock } from 'lucide-react';
 import { useAuth } from '@/_core/hooks/useAuth';
 
 const STUN = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
@@ -339,39 +339,83 @@ export default function ChatRoom() {
 
       {/* Controls */}
       <div className="mt-3 bg-black/30 backdrop-blur-md rounded-3xl p-4 border border-white/10">
-        <div className="flex flex-wrap gap-3 justify-center mb-3">
+        <div className="flex flex-wrap gap-4 justify-center mb-4">
+          
+          {/* Microphone Button */}
+          <div className="flex flex-col items-center group">
+            <button onClick={toggleMic}
+              title={isMicOn ? "كتم الصوت" : "تشغيل الصوت"}
+              className={`rounded-full p-3 transition-all shadow-lg hover:scale-110 ${isMicOn ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}`}>
+              {isMicOn ? <Mic className="w-6 h-6 text-white" /> : <MicOff className="w-6 h-6 text-white" />}
+            </button>
+            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity">{isMicOn ? "كتم الصوت" : "تشغيل الصوت"}</span>
+          </div>
 
-          <button onClick={toggleMic}
-            className={`rounded-full p-3 transition-all shadow-lg ${isMicOn ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}`}>
-            {isMicOn ? <Mic className="w-6 h-6 text-white" /> : <MicOff className="w-6 h-6 text-white" />}
-          </button>
+          {/* Video Button */}
+          <div className="flex flex-col items-center group">
+            <button onClick={toggleVideo}
+              title={isVideoOn ? "إيقاف الكاميرا" : "تشغيل الكاميرا"}
+              className={`rounded-full p-3 transition-all shadow-lg hover:scale-110 ${isVideoOn ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600'}`}>
+              {isVideoOn ? <Video className="w-6 h-6 text-white" /> : <VideoOff className="w-6 h-6 text-white" />}
+            </button>
+            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity">{isVideoOn ? "إيقاف الكاميرا" : "تشغيل الكاميرا"}</span>
+          </div>
 
-          <button onClick={toggleVideo}
-            className={`rounded-full p-3 transition-all shadow-lg ${isVideoOn ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600'}`}>
-            {isVideoOn ? <Video className="w-6 h-6 text-white" /> : <VideoOff className="w-6 h-6 text-white" />}
-          </button>
+          {/* Speaker Button */}
+          <div className="flex flex-col items-center group">
+            <button onClick={() => setIsSpeakerOn(v => !v)}
+              title={isSpeakerOn ? "كتم المكبر" : "تشغيل المكبر"}
+              className={`rounded-full p-3 transition-all shadow-lg hover:scale-110 ${isSpeakerOn ? 'bg-purple-500 hover:bg-purple-600' : 'bg-red-500 hover:bg-red-600'}`}>
+              {isSpeakerOn ? <Volume2 className="w-6 h-6 text-white" /> : <VolumeX className="w-6 h-6 text-white" />}
+            </button>
+            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity">{isSpeakerOn ? "كتم المكبر" : "تشغيل المكبر"}</span>
+          </div>
 
-          <button onClick={() => setIsSpeakerOn(v => !v)}
-            className={`rounded-full p-3 transition-all shadow-lg ${isSpeakerOn ? 'bg-purple-500 hover:bg-purple-600' : 'bg-red-500 hover:bg-red-600'}`}>
-            {isSpeakerOn ? <Volume2 className="w-6 h-6 text-white" /> : <VolumeX className="w-6 h-6 text-white" />}
-          </button>
+          {/* Chat Button */}
+          <div className="flex flex-col items-center group">
+            <button onClick={() => { setShowChat(v => !v); setUnread(0); }}
+              title="الدردشة النصية"
+              className="relative rounded-full p-3 bg-cyan-500 hover:bg-cyan-600 transition-all shadow-lg hover:scale-110">
+              <MessageSquare className="w-6 h-6 text-white" />
+              {unread > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">{unread}</span>
+              )}
+            </button>
+            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity">الدردشة</span>
+          </div>
 
-          <button onClick={() => { setShowChat(v => !v); setUnread(0); }}
-            className="relative rounded-full p-3 bg-cyan-500 hover:bg-cyan-600 transition-all shadow-lg">
-            <MessageSquare className="w-6 h-6 text-white" />
-            {unread > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">{unread}</span>
-            )}
-          </button>
+          {/* Switch Camera Button (Premium) */}
+          <div className="flex flex-col items-center group relative">
+            <button
+              title="تبديل الكاميرا (قريباً)"
+              disabled
+              className="rounded-full p-3 bg-gray-500 opacity-50 cursor-not-allowed transition-all shadow-lg relative">
+              <Smartphone className="w-6 h-6 text-white" />
+              <Lock className="w-3 h-3 text-white absolute top-1 right-1" />
+            </button>
+            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity">تبديل الكاميرا</span>
+            <span className="text-yellow-300 text-xs mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">قريباً</span>
+          </div>
 
-          <button onClick={handleNext} disabled={status === 'connecting' || status === 'waiting'}
-            className="rounded-full p-3 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-40 transition-all shadow-lg">
-            <SkipForward className="w-6 h-6 text-white" />
-          </button>
+          {/* Skip Button */}
+          <div className="flex flex-col items-center group">
+            <button onClick={handleNext} disabled={status === 'connecting' || status === 'waiting'}
+              title="الانتقال للشخص التالي"
+              className="rounded-full p-3 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-40 transition-all shadow-lg hover:scale-110">
+              <SkipForward className="w-6 h-6 text-white" />
+            </button>
+            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity">التالي</span>
+          </div>
 
-          <button className="rounded-full p-3 bg-rose-500 hover:bg-rose-600 transition-all shadow-lg">
-            <Flag className="w-6 h-6 text-white" />
-          </button>
+          {/* Report Button */}
+          <div className="flex flex-col items-center group">
+            <button
+              title="الإبلاغ عن المستخدم"
+              className="rounded-full p-3 bg-rose-500 hover:bg-rose-600 transition-all shadow-lg hover:scale-110">
+              <Flag className="w-6 h-6 text-white" />
+            </button>
+            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity">إبلاغ</span>
+          </div>
         </div>
 
         <Button onClick={handleEnd}
