@@ -1,15 +1,16 @@
 import { eq, or } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { InsertUser, users, InsertMessage, messages } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
-// Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      const client = postgres(process.env.DATABASE_URL, { ssl: 'require' });
+      _db = drizzle(client);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
@@ -30,9 +31,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 
   try {
-    const values: InsertUser = {
-      openId: user.openId,
-    };
+    const values: InsertUser = { openId: user.openId };
     const updateSet: Record<string, unknown> = {};
 
     const textFields = ["name", "email", "loginMethod"] as const;
@@ -68,7 +67,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.openId,
       set: updateSet,
     });
   } catch (error) {
@@ -85,7 +85,6 @@ export async function getUserByOpenId(openId: string) {
   }
 
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-
   return result.length > 0 ? result[0] : undefined;
 }
 
@@ -126,8 +125,7 @@ export async function getUsersByGender(gender: 'male' | 'female' | 'other') {
   }
 
   try {
-    const result = await db.select().from(users).where(eq(users.gender, gender));
-    return result;
+    return await db.select().from(users).where(eq(users.gender, gender));
   } catch (error) {
     console.error("[Database] Failed to get users by gender:", error);
     return [];
@@ -142,12 +140,7 @@ export async function saveMessage(senderId: number, receiverId: number, content:
   }
 
   try {
-    await db.insert(messages).values({
-      senderId,
-      receiverId,
-      content,
-      isRead: false,
-    });
+    await db.insert(messages).values({ senderId, receiverId, content, isRead: false });
   } catch (error) {
     console.error("[Database] Failed to save message:", error);
     throw error;
@@ -162,10 +155,9 @@ export async function getMessages(userId1: number, userId2: number) {
   }
 
   try {
-    const result = await db.select().from(messages).where(
+    return await db.select().from(messages).where(
       or(eq(messages.senderId, userId1), eq(messages.receiverId, userId1))
     );
-    return result;
   } catch (error) {
     console.error("[Database] Failed to get messages:", error);
     return [];
