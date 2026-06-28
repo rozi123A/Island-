@@ -1,34 +1,43 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useLocation } from 'wouter';
-import { Heart, Video } from 'lucide-react';
-import { trpc } from '@/lib/trpc';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useLocation } from "wouter";
+import { Heart, Video } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Login() {
   const [, setLocation] = useLocation();
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [gender, setGender] = useState('');
+  const { isAuthenticated, loading } = useAuth();
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const guestLoginMutation = trpc.users.guestLogin.useMutation();
 
+  // اذا كان المستخدم مسجلاً بالفعل، ابعثه مباشرة للدردشة
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      setLocation("/chat");
+    }
+  }, [isAuthenticated, loading, setLocation]);
+
   const handleStartChat = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!name.trim()) {
-      setError('يرجى إدخال اسمك');
+      setError("يرجى إدخال اسمك");
       return;
     }
     if (!age || parseInt(age) < 13) {
-      setError('يجب أن يكون عمرك 13 سنة أو أكثر');
+      setError("يجب أن يكون عمرك 13 سنة أو أكثر");
       return;
     }
     if (!gender) {
-      setError('يرجى اختيار الجنس');
+      setError("يرجى اختيار الجنس");
       return;
     }
 
@@ -38,20 +47,32 @@ export default function Login() {
       await guestLoginMutation.mutateAsync({
         name: name.trim(),
         age: parseInt(age),
-        gender: gender as 'male' | 'female' | 'other',
+        gender: gender as "male" | "female" | "other",
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name.trim())}`,
       });
 
       setTimeout(() => {
-        setLocation('/chat');
+        setLocation("/chat");
       }, 300);
     } catch (err) {
       console.error(err);
-      setError('حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى');
+      setError("حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // شاشة تحميل أثناء التحقق من الجلسة
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-cyan-400 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white text-lg font-medium">جاري التحقق...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-cyan-400 flex items-center justify-center p-4 relative overflow-hidden">
