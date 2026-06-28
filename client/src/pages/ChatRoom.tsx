@@ -348,7 +348,7 @@ export default function ChatRoom() {
               className={`rounded-full p-3 transition-all shadow-lg hover:scale-110 ${isMicOn ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}`}>
               {isMicOn ? <Mic className="w-6 h-6 text-white" /> : <MicOff className="w-6 h-6 text-white" />}
             </button>
-            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity font-semibold">{isMicOn ? "Mute" : "Unmute"}</span>
+            <span className="text-white text-xs mt-2 font-bold">{isMicOn ? "Mute" : "Unmute"}</span>
           </div>
 
           {/* Video Button */}
@@ -358,7 +358,7 @@ export default function ChatRoom() {
               className={`rounded-full p-3 transition-all shadow-lg hover:scale-110 ${isVideoOn ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600'}`}>
               {isVideoOn ? <Video className="w-6 h-6 text-white" /> : <VideoOff className="w-6 h-6 text-white" />}
             </button>
-            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity font-semibold">{isVideoOn ? "Video" : "Video"}</span>
+            <span className="text-white text-xs mt-2 font-bold">Video</span>
           </div>
 
           {/* Speaker Button */}
@@ -368,7 +368,7 @@ export default function ChatRoom() {
               className={`rounded-full p-3 transition-all shadow-lg hover:scale-110 ${isSpeakerOn ? 'bg-purple-500 hover:bg-purple-600' : 'bg-red-500 hover:bg-red-600'}`}>
               {isSpeakerOn ? <Volume2 className="w-6 h-6 text-white" /> : <VolumeX className="w-6 h-6 text-white" />}
             </button>
-            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity font-semibold">Speaker</span>
+            <span className="text-white text-xs mt-2 font-bold">Speaker</span>
           </div>
 
           {/* Chat Button */}
@@ -381,7 +381,7 @@ export default function ChatRoom() {
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">{unread}</span>
               )}
             </button>
-            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity font-semibold">Chat</span>
+            <span className="text-white text-xs mt-2 font-bold">Chat</span>
           </div>
 
           {/* Switch Camera Button (Premium) */}
@@ -389,12 +389,12 @@ export default function ChatRoom() {
             <button
               title="Switch Camera (Coming Soon)"
               disabled
-              className="rounded-full p-3 bg-gray-500 opacity-50 cursor-not-allowed transition-all shadow-lg relative">
+              className="rounded-full p-3 bg-gradient-to-br from-yellow-400 to-yellow-500 opacity-70 cursor-not-allowed transition-all shadow-lg relative hover:shadow-xl">
               <Smartphone className="w-6 h-6 text-white" />
               <Lock className="w-3 h-3 text-white absolute top-1 right-1" />
             </button>
-            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity font-semibold">Switch</span>
-            <span className="text-yellow-300 text-xs mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity font-semibold">Premium</span>
+            <span className="text-yellow-300 text-xs mt-2 font-bold">Switch</span>
+            <span className="text-yellow-400 text-xs font-extrabold">PREMIUM</span>
           </div>
 
           {/* Skip Button */}
@@ -404,7 +404,7 @@ export default function ChatRoom() {
               className="rounded-full p-3 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-40 transition-all shadow-lg hover:scale-110">
               <SkipForward className="w-6 h-6 text-white" />
             </button>
-            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity font-semibold">Skip</span>
+            <span className="text-white text-xs mt-2 font-bold">Skip</span>
           </div>
 
           {/* Report Button */}
@@ -414,7 +414,7 @@ export default function ChatRoom() {
               className="rounded-full p-3 bg-rose-500 hover:bg-rose-600 transition-all shadow-lg hover:scale-110">
               <Flag className="w-6 h-6 text-white" />
             </button>
-            <span className="text-white text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity font-semibold">Report</span>
+            <span className="text-white text-xs mt-2 font-bold">Report</span>
           </div>
         </div>
 
