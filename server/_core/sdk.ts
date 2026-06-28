@@ -171,7 +171,7 @@ class SDKServer {
     return this.signSession(
       {
         openId,
-        appId: ENV.appId,
+        appId: ENV.appId || 'app',
         name: options.name || "",
       },
       options
@@ -212,11 +212,8 @@ class SDKServer {
       });
       const { openId, appId, name } = payload as Record<string, unknown>;
 
-      if (
-        !isNonEmptyString(openId) ||
-        !isNonEmptyString(appId) ||
-        !isNonEmptyString(name)
-      ) {
+      // Only openId is required; appId may be empty when VITE_APP_ID is not set
+      if (!isNonEmptyString(openId)) {
         console.warn("[Auth] Session payload missing required fields");
         return null;
       }
