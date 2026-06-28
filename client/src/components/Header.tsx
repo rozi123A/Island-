@@ -1,14 +1,25 @@
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, Video } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 /**
  * Header Component
  * Design: Sticky navigation with logo and menu
- * Features: Responsive menu, brand logo, and navigation links
+ * Features: Responsive menu, brand logo, auth-aware navigation
  */
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [, setLocation] = useLocation();
+  const { user, isAuthenticated, loading, logout } = useAuth();
+
+  const handleStartChat = () => setLocation("/chat");
+  const handleLogin = () => setLocation("/login");
+  const handleLogout = async () => {
+    await logout();
+    setLocation("/");
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
@@ -40,12 +51,51 @@ export default function Header() {
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <button className="text-purple-600 font-semibold hover:text-purple-700 transition-colors">
-            تسجيل الدخول
-          </button>
-          <button className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2 px-6 rounded-full hover:from-purple-700 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg">
-            ابدأ الآن
-          </button>
+          {loading ? (
+            <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+          ) : isAuthenticated && user ? (
+            <>
+              <div className="flex items-center gap-2">
+                <img
+                  src={(user as any).avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent((user as any).name || "user")}`}
+                  alt={(user as any).name || "المستخدم"}
+                  className="w-9 h-9 rounded-full border-2 border-purple-400 object-cover"
+                />
+                <span className="text-gray-800 font-semibold text-sm">
+                  {(user as any).name || "المستخدم"}
+                </span>
+              </div>
+              <button
+                onClick={handleStartChat}
+                className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2 px-5 rounded-full hover:from-purple-700 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2"
+              >
+                <Video className="w-4 h-4" />
+                ابدأ الدردشة
+              </button>
+              <button
+                onClick={handleLogout}
+                className="text-gray-500 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50"
+                title="تسجيل الخروج"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={handleLogin}
+                className="text-purple-600 font-semibold hover:text-purple-700 transition-colors"
+              >
+                تسجيل الدخول
+              </button>
+              <button
+                onClick={handleLogin}
+                className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2 px-6 rounded-full hover:from-purple-700 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                ابدأ الآن
+              </button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -73,13 +123,49 @@ export default function Header() {
           <a href="#safety" className="block text-gray-700 hover:text-purple-600 font-medium py-2">
             الأمان
           </a>
-          <div className="flex flex-col gap-2 pt-4">
-            <button className="text-purple-600 font-semibold py-2">
-              تسجيل الدخول
-            </button>
-            <button className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2 px-6 rounded-full">
-              ابدأ الآن
-            </button>
+          <div className="flex flex-col gap-2 pt-4 border-t border-gray-100">
+            {isAuthenticated && user ? (
+              <>
+                <div className="flex items-center gap-3 py-2">
+                  <img
+                    src={(user as any).avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent((user as any).name || "user")}`}
+                    alt={(user as any).name || "المستخدم"}
+                    className="w-10 h-10 rounded-full border-2 border-purple-400 object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold text-gray-800">{(user as any).name || "المستخدم"}</p>
+                    <p className="text-xs text-gray-500">مسجّل الدخول</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setIsMenuOpen(false); handleStartChat(); }}
+                  className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-3 px-6 rounded-full text-center"
+                >
+                  ابدأ الدردشة الآن
+                </button>
+                <button
+                  onClick={() => { setIsMenuOpen(false); handleLogout(); }}
+                  className="text-red-500 font-medium py-2 text-center"
+                >
+                  تسجيل الخروج
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => { setIsMenuOpen(false); handleLogin(); }}
+                  className="text-purple-600 font-semibold py-2"
+                >
+                  تسجيل الدخول
+                </button>
+                <button
+                  onClick={() => { setIsMenuOpen(false); handleLogin(); }}
+                  className="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2 px-6 rounded-full"
+                >
+                  ابدأ الآن
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
