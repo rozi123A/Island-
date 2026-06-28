@@ -1,8 +1,10 @@
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
-import { saveUserProfile, getUsersByGender, getMessages, saveMessage } from "./db";
+import { saveUserProfile, getUsersByGender, getMessages, saveMessage, upsertUser, getUserByOpenId } from "./db";
+import { sdk } from "./_core/sdk";
+import { nanoid } from "nanoid";
 import { z } from "zod";
 
 export const appRouter = router({
@@ -12,13 +14,50 @@ export const appRouter = router({
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+      return { success: true } as const;
     }),
   }),
 
   users: router({
+    // تسجيل دخول كضيف (بدون OAuth) — يحفظ البيانات في قاعدة البيانات ويُنشئ جلسة
+    guestLogin: publicProcedure
+      .input(z.object({
+        name: z.string().min(1, "الاسم مطلوب"),
+        age: z.number().min(13).max(100),
+        gender: z.enum(['male', 'female', 'other']),
+        avatar: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const guestOpenId = `guest_${nanoid()}`;
+
+        await upsertUser({
+          openId: guestOpenId,
+          name: input.name,
+          loginMethod: 'guest',
+          lastSignedIn: new Date(),
+        });
+
+        const user = await getUserByOpenId(guestOpenId);
+        if (!user) throw new Error("فشل إنشاء المستخدم");
+
+        await saveUserProfile(user.id, {
+          name: input.name,
+          age: input.age,
+          gender: input.gender,
+          avatar: input.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(input.name)}`,
+        });
+
+        const sessionToken = await sdk.createSessionToken(guestOpenId, {
+          name: input.name,
+          expiresInMs: ONE_YEAR_MS,
+        });
+
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+        return { success: true };
+      }),
+
     saveProfile: protectedProcedure
       .input(z.object({
         name: z.string().optional(),
@@ -31,7 +70,7 @@ export const appRouter = router({
         await saveUserProfile(ctx.user.id, input);
         return { success: true };
       }),
-    
+
     getByGender: publicProcedure
       .input(z.enum(['male', 'female', 'other']))
       .query(async ({ input }) => {
@@ -49,7 +88,7 @@ export const appRouter = router({
         await saveMessage(ctx.user.id, input.receiverId, input.content);
         return { success: true };
       }),
-    
+
     getMessages: protectedProcedure
       .input(z.number())
       .query(async ({ ctx, input }) => {
